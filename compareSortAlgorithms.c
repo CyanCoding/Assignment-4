@@ -54,6 +54,13 @@ void merge(int pData[], int l, int mid, int r) {
     free(right);
 }
 
+// Used by most functions when swapping numbers
+void swap(int *x, int *y) {
+    *x = *x ^ *y;
+    *y = *x ^ *y;
+    *x = *x ^ *y;
+}
+
 // implement merge sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void mergeSort(int pData[], int l, int r) {
@@ -71,19 +78,52 @@ void mergeSort(int pData[], int l, int r) {
 // implement insertion sort
 // extraMemoryAllocated counts bytes of memory allocated
 void insertionSort(int* pData, int n) {
-	
+	for (int i = 1; i < n; i++) {
+        int val = pData[i];
+        int j = i - 1;
+
+        while (j >= 0 && pData[j] > val) {
+            pData[j + 1] = pData[j];
+
+            j--;
+        }
+        pData[j + 1] = val;
+    }
 }
 
 // implement bubble sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void bubbleSort(int* pData, int n) {
-	
+    // We need to keep sorting until the full array is sorted
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            // We compare two values and swap if necessary
+            if (pData[j] > pData[j + 1]) {
+                swap(&pData[j], &pData[j + 1]);
+            }
+        }
+    }
 }
 
 // implement selection sort
 // extraMemoryAllocated counts bytes of extra memory allocated
 void selectionSort(int* pData, int n) {
-	
+	for (int i = 0; i < n - 1; i++) {
+        int savePos = i;
+
+        // Go through the rest of the unsorted list to find the smallest number,
+        // then replace with position i.
+        for (int j = i + 1; j < n; j++) {
+            if (pData[j] < pData[savePos]) {
+                savePos = j;
+            }
+        }
+
+        // Replace if i and savePos are not the same
+        if (savePos != i) {
+            swap(&pData[i], &pData[savePos]);
+        }
+    }
 }
 
 // parses input file to an integer array
@@ -99,7 +139,7 @@ int parseData(char *inputFileName, int **ppData) {
 
 		// Implement parse data block
         for (int i = 0; i < dataSz; i++) {
-            fscanf(inFile, "%d ", /*ppData[i]*/ *ppData + i);
+            fscanf(inFile, "%d ", ppData[i]);
         }
 	}
 	
@@ -125,9 +165,9 @@ int main(void) {
 	clock_t start, end;
 	int i;
     double cpu_time_used;
-	char* fileNames[] = {"/home/cam/Desktop/Computer Science 1/Assignments/Assignment 4/input1.txt",
-                         "/home/cam/Desktop/Computer Science 1/Assignments/Assignment 4/input2.txt",
-                         "/home/cam/Desktop/Computer Science 1/Assignments/Assignment 4/input3.txt"};
+	char* fileNames[] = {"input1.txt",
+                         "input2.txt",
+                         "input3.txt"};
 	
 	for (i=0;i<3;++i)
 	{
@@ -143,28 +183,28 @@ int main(void) {
 		printf("Dataset Size : %d\n",dataSz);
 		printf("---------------------------\n");
 		
-//		printf("Selection Sort:\n");
-//		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
-//		extraMemoryAllocated = 0;
-//		start = clock();
-//		selectionSort(pDataCopy, dataSz);
-//		end = clock();
-//		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-//		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
-//		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
-//		printArray(pDataCopy, dataSz);
-//
-//		printf("Insertion Sort:\n");
-//		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
-//		extraMemoryAllocated = 0;
-//		start = clock();
-//		insertionSort(pDataCopy, dataSz);
-//		end = clock();
-//		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-//		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
-//		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
-//		printArray(pDataCopy, dataSz);
-//
+		printf("Selection Sort:\n");
+		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
+		extraMemoryAllocated = 0;
+		start = clock();
+		selectionSort(pDataCopy, dataSz);
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
+		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
+		printArray(pDataCopy, dataSz);
+
+		printf("Insertion Sort:\n");
+		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
+		extraMemoryAllocated = 0;
+		start = clock();
+		insertionSort(pDataCopy, dataSz);
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		printf("\truntime\t\t\t: %.1lf\n",cpu_time_used);
+		printf("\textra memory allocated\t: %d\n",extraMemoryAllocated);
+		printArray(pDataCopy, dataSz);
+
 		printf("Bubble Sort:\n");
 		memcpy(pDataCopy, pDataSrc, dataSz*sizeof(int));
 		extraMemoryAllocated = 0;
